@@ -1,4 +1,7 @@
 # src/scraping/scraping_bot.py
+import csv
+import os
+from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -16,6 +19,7 @@ class ScrapingBot:
         chrome_options = Options()
         chrome_options.add_argument("--headless")  # Rodar o Chrome em modo "headless"
         self.driver = webdriver.Chrome(options=chrome_options)
+        self.grupo_cotas = {}
 
     def login_to_site(self, username, password):
         # Abrir a página de login
@@ -40,14 +44,30 @@ class ScrapingBot:
             EC.presence_of_element_located((By.CLASS_NAME, "main"))
         )
 
-        # Dentro do elemento 'main', encontrar a 'div' com a classe 'tipo_contrato'
-        tipo_contrato_element = main_element.find_element(
-            By.CLASS_NAME, "tipo_contrato"
+        # # Dentro do elemento 'main', encontrar a 'div' com a classe 'tipo_contrato'
+        # tipo_contrato_element = main_element.find_element(
+        #     By.CLASS_NAME, "tipo_contrato"
+        # )
+
+        # Esperar até que o loader desapareça
+        WebDriverWait(main_element, 10).until(
+            EC.invisibility_of_element_located((By.ID, "loader"))
         )
 
+        # Agora, tentar clicar no botão "Grupos Andamento"
         andamento_button = main_element.find_element(
             By.XPATH, "//a[contains(., 'Grupos') and contains(., 'Andamento')]"
         )
+
+        # Garantir que o botão está visível antes de clicar
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", andamento_button)
+
+        # Esperar que o botão esteja clicável
+        WebDriverWait(main_element, 10).until(
+            EC.element_to_be_clickable(andamento_button)
+        )
+
+        # Clicar no botão
         andamento_button.click()
 
         ## Clica no botão "Por parcelas"
@@ -80,6 +100,13 @@ class ScrapingBot:
             By.XPATH, "//*[@id='divPasso1']/div/div[2]/div/div[5]/div[3]/div/input"
         )
         buscar_button.click()
+
+        sleep(2)
+
+        ## Navega entre os grupos para copiar as cotas de cada grupo
+        self.click_on_grupo_links()
+
+        gerar_csv(grupos_cotas=self.grupo_cotas)
 
         # slider = main_element.find_element(By.CSS_SELECTOR, 'input[type="range"].slider')
         # self.driver.execute_script("arguments[0].value = 2000;", slider)
@@ -142,6 +169,7 @@ class ScrapingBot:
 
         # Inicializar o objeto Select para interagir com o dropdown
         select = Select(dropdown)
+        sleep(1)
 
         # Selecionar a primeira opção válida (índice 1, pois índice 0 é "Selecione")
         select.select_by_index(1)
@@ -194,6 +222,105 @@ class ScrapingBot:
 
         print(f"Slider ajustado para: {desired_value}")
         sleep(2)  # Aguarda o processamento do JavaScript, se necessário
+
+    def click_on_grupo_links(self):
+        # Esperar até que a tabela esteja visível
+        WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located((By.XPATH, "//*[@id='divPasso21']/div/div/div/div/div/table"))
+        )
+        
+        # Localizar todos os links de "Valor 1º Parcela" que disparam o JavaScript
+        grupo_links = self.driver.find_elements(By.XPATH, "//tbody/tr/td[9]/a")
+
+        # Iterar sobre cada link e clicar nele
+        for link in grupo_links:
+            
+            # Esperar até que o link seja clicável
+            WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable(link)
+            )
+            # Clicar no link
+            link.click()
+            
+            # Espera opcional para a interação ser processada
+            sleep(4)
+
+            self.extract_cotas()
+            # break
+                
+                # Aqui você pode extrair as informações que se abrem ao clicar no link
+                
+                # # Voltar para a tabela de grupos (dependendo de como a página se comporta)
+                # self.driver.back()
+                # sleep(2)  # Aguarda o carregamento da página de volta
+
+            # except Exception as e:
+            #     print(f"Erro ao clicar no link: {e}")
+
+    def extract_cotas(self):
+        # Obter o HTML da página atual
+        page_html = self.driver.page_source
+        
+        # Analisar o HTML com BeautifulSoup
+        soup = BeautifulSoup(page_html, 'html.parser')
+
+        div_passo = soup.find('div', {'id': 'divPasso22'})
+
+        if div_passo:
+            # 2. Encontrar o parágrafo que contém o número do grupo
+            grupo_paragraph = div_passo.find('p')
+        
+            if grupo_paragraph:
+                # Extrair o número do grupo
+                grupo_info = grupo_paragraph.get_text(strip=True)
+                grupo_numero = grupo_info.split('Grupo:')[-1].split('Parcela:')[0].strip()
+                print(f"Grupo: {grupo_numero}")
+            else:
+                print("Erro: Parágrafo contendo o número do grupo não foi encontrado.")
+                # return None, []
+
+        
+        # Extrair o número do grupo
+        # grupo_info = soup.find('p', text=lambda t: t and 'Grupo:' in t)
+
+        # if grupo_info:
+        #     # Se o elemento for encontrado, extrair o texto
+        #     grupo_numero = grupo_info.get_text(strip=True).split('Grupo:')[-1].split('Parcela:')[0].strip()
+        #     print(f"Grupo: {grupo_numero}")
+        #     # return grupo_numero
+        # else:
+        #     # Tratar o caso onde o parágrafo não é encontrado
+        #     print("Erro: Parágrafo contendo o número do grupo não foi encontrado.")
+        #     # return None
+        
+        # grupo_numero = grupo_info.split('Grupo:')[-1].strip()
+        
+        # Extrair todos os valores das cotas
+        cotas = []
+        radio_inputs = div_passo.find_all('input', {'name': 'cota'})
+        
+        for radio in radio_inputs:
+            cotas.append(radio['value'])  # Adiciona o valor da cota ao array
+
+        # Adicionar o grupo e suas cotas ao dicionário
+        self.grupo_cotas[grupo_numero] = cotas
+
+        print(f"Grupo {grupo_numero}: Cotas extraídas -> {cotas}")
+
+def gerar_csv(grupos_cotas, nome_arquivo='grupos_cotas.csv'):
+    # Abrir o arquivo CSV para escrita
+    with open(nome_arquivo, mode='w', newline='', encoding='utf-8') as arquivo_csv:
+        escritor_csv = csv.writer(arquivo_csv)
+        
+        # Escrever o cabeçalho (opcional)
+        escritor_csv.writerow(['Grupo', 'Cotas'])
+        
+        # Iterar sobre o dicionário e escrever as linhas no CSV
+        for grupo, cotas in grupos_cotas.items():
+            # Escrever o grupo na primeira coluna e cotas subsequentes
+            escritor_csv.writerow([grupo, ', '.join(cotas)])  # Unir cotas como string separada por vírgula
+
+    print(f"Arquivo CSV '{nome_arquivo}' gerado com sucesso!")
 
     def close(self):
         # Fechar o navegador

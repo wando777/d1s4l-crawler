@@ -4,6 +4,7 @@ from scraping.scrapingbot import ScrapingBot
 
 # from scraping.extract_data import extract_table_data, process_table_datas
 
+
 def main():
     # Inicializar o bot de scraping
     bot = ScrapingBot()
