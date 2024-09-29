@@ -1,31 +1,47 @@
-from scraping.login import login_to_site
-from scraping.navigation import navigate_to_data_page
-from scraping.scrapingbot import ScrapingBot
+from scraping.scraping_bot import ScrapingBot
 
-# from scraping.extract_data import extract_table_data, process_table_datas
+# Configurações
+USERNAME = "02368152377"
+PASSWORD = "123456"
+HEADLESS = True
+
+
+def initialize_bot(headless):
+    """Inicializa o bot de scraping."""
+    return ScrapingBot(headless=headless)
+
+
+def perform_login(bot, username, password):
+    """Realiza o login no site."""
+    bot.login_to_site(username, password)
+
+
+def navigate_and_extract_data(bot):
+    """Navega para a página de dados e realiza a extração."""
+    bot.navigate_to_data_page()
 
 
 def main():
-    # Inicializar o bot de scraping
-    bot = ScrapingBot()
+    """Função principal para executar o scraping."""
+    bot = None
+    try:
+        # Inicializar o bot de scraping
+        bot = initialize_bot(HEADLESS)
 
-    # Credenciais
-    username = "02368152377"
-    password = "123456"
+        # Fazer login
+        perform_login(bot, USERNAME, PASSWORD)
 
-    # Fazer login
-    bot.login_to_site(username, password)
+        # Navegar para a página de dados e extrair informações
+        navigate_and_extract_data(bot)
 
-    # Navegar para a página de dados
-    bot.navigate_to_data_page()
+    except Exception as e:
+        if e == TimeoutError:
+            print("O sistema da Disal está lento, favor tentar novamente mais tarde.")
+        print(f"Ocorreu um erro: {e}")
+    finally:
+        if bot:
+            bot.close()
 
 
 if __name__ == "__main__":
     main()
-    # Extração dos dados da tabela
-    # data = extract_table_data()
-
-    # # Processamento dos dados
-    # processed_data = process_table_data(data)
-
-    # print(processed_data)
