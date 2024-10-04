@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scraping e Processamento de Cotas</title>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+      th,
+      td {
+        padding: 8px;
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Scraping e Processamento de Cotas</h1>
+    <form id="scrape-form">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required />
+      <br />
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required />
+      <br />
+      <label for="sorteio">Sorteio:</label>
+      <input type="number" id="sorteio" name="sorteio" required />
+      <br />
+      <button type="submit">Iniciar Scraping</button>
+    </form>
+    <div id="result"></div>
+    <script>
+      document
+        .getElementById("scrape-form")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          const formData = new FormData(event.target);
+          fetch("/scrape", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.status === "success") {
+                displayResults(data.grupos_cotas, data.result);
+              } else {
+                alert("Erro: " + data.message);
+              }
+            });
+        });
+
+      function displayResults(gruposCotas, result) {
+        const resultDiv = document.getElementById("result");
+        resultDiv.innerHTML = "";
+
+        // Tabela de todas as cotas do scraping
+        let tableHtml =
+          "<h2>Todas as Cotas</h2><table><tr><th>Grupo</th><th>Cotas</th></tr>";
+        for (const [grupo, cotas] of Object.entries(gruposCotas)) {
+          tableHtml += `<tr><td>${grupo}</td><td>${cotas.join(", ")}</td></tr>`;
+        }
+        tableHtml += "</table>";
+        resultDiv.innerHTML += tableHtml;
+
+        // Tabela de resultado do GruposCotasProcessor
+        tableHtml =
+          "<h2>Resultado</h2><table><tr><th>Grupo</th><th>Cotas</th></tr>";
+        for (const [grupo, cotas] of Object.entries(result)) {
+          tableHtml += `<tr><td>${grupo}</td><td>${cotas.join(", ")}</td></tr>`;
+        }
+        tableHtml += "</table>";
+        resultDiv.innerHTML += tableHtml;
+      }
+    </script>
+  </body>
+</html>

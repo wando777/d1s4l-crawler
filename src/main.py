@@ -3,7 +3,7 @@ from scraping.scraping_bot import ScrapingBot
 # Configurações
 USERNAME = "02368152377"
 PASSWORD = "123456"
-HEADLESS = True
+HEADLESS = False
 
 
 def initialize_bot(headless):
@@ -34,10 +34,10 @@ def main():
         # Navegar para a página de dados e extrair informações
         navigate_and_extract_data(bot)
 
-    except Exception as e:
-        if e == TimeoutError:
-            print("O sistema da Disal está lento, favor tentar novamente mais tarde.")
-        print(f"Ocorreu um erro: {e}")
+    # except Exception as e:
+    #     if e == TimeoutError:
+    #         print("O sistema da Disal está lento, favor tentar novamente mais tarde.")
+    #     print(f"Ocorreu um erro: {e}")
     finally:
         if bot:
             bot.close()

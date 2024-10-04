@@ -40,8 +40,8 @@ class DataPage:
         self._wait_loader()
         self._select_options(main_element)
         self._click_on_grupo_links(main_element)
-        CSVWriter.gerar_csv(self.grupo_cotas)
-        write_html(self.grupo_cotas, '/Users/wanderson.leite/Desktop/wando/projetos/disal-crawler/results.html')
+        # CSVWriter.gerar_csv(self.grupo_cotas)
+        # write_html(self.grupo_cotas, '/Users/wanderson.leite/Desktop/wando/projetos/disal-crawler/results.html')
 
     def _select_options(self, main_element):
         WebDriverWait(self.driver, 10).until(
@@ -133,12 +133,18 @@ class DataPage:
                 EC.element_to_be_clickable(link)
             ).click()
             self._wait_loader()
+            WebDriverWait(self.driver, 20).until(
+                EC.invisibility_of_element_located((By.CLASS_NAME, "fancybox-overlay fancybox-overlay-fixed"))
+            )
             self._extract_cotas()
 
     def _extract_cotas(self):
         # WebDriverWait(self.driver, 10).until(
         #     EC.presence_of_element_located((By.ID, "divPasso22"))
         # )
+        WebDriverWait(self.driver, 20).until(
+            EC.invisibility_of_element_located((By.CLASS_NAME, "fancybox-overlay fancybox-overlay-fixed"))
+        )
         page_html = self.driver.page_source
         soup = BeautifulSoup(page_html, "html.parser")
         div_passo = soup.find("div", {"id": "divPasso22"})
