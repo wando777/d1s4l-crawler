@@ -1,10 +1,9 @@
 from scraping.scraping_bot import ScrapingBot
 
 # Configurações
-USERNAME = "02368152377"
-PASSWORD = "123456"
+USERNAME = "*"
+PASSWORD = "*"
 HEADLESS = False
-
 
 def initialize_bot(headless):
     """Inicializa o bot de scraping."""

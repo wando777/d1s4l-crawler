@@ -4,80 +4,77 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Scraping e Processamento de Cotas</title>
-    <style>
-      table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-      table,
-      th,
-      td {
-        border: 1px solid black;
-      }
-      th,
-      td {
-        padding: 8px;
-        text-align: left;
-      }
-    </style>
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+
+    <!-- Custom CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/main.css') }}"
+    />
   </head>
   <body>
-    <h1>Scraping e Processamento de Cotas</h1>
-    <form id="scrape-form">
-      <label for="username">Username:</label>
-      <input type="text" id="username" name="username" required />
-      <br />
-      <label for="password">Password:</label>
-      <input type="password" id="password" name="password" required />
-      <br />
-      <label for="sorteio">Sorteio:</label>
-      <input type="number" id="sorteio" name="sorteio" required />
-      <br />
-      <button type="submit">Iniciar Scraping</button>
-    </form>
-    <div id="result"></div>
-    <script>
-      document
-        .getElementById("scrape-form")
-        .addEventListener("submit", function (event) {
-          event.preventDefault();
-          const formData = new FormData(event.target);
-          fetch("/scrape", {
-            method: "POST",
-            body: formData,
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.status === "success") {
-                displayResults(data.grupos_cotas, data.result);
-              } else {
-                alert("Erro: " + data.message);
-              }
-            });
-        });
+    <div class="container">
+      <h1 class="text-center my-5">Scraping e Processamento de Cotas</h1>
 
-      function displayResults(gruposCotas, result) {
-        const resultDiv = document.getElementById("result");
-        resultDiv.innerHTML = "";
+      <!-- Formulário de login e scraping -->
+      <form id="scrape-form" class="form-group">
+        <div class="form-group">
+          <label for="username">Username:</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            class="form-control"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            class="form-control"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="sorteio">Sorteio:</label>
+          <input
+            type="number"
+            id="sorteio"
+            name="sorteio"
+            class="form-control"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">Iniciar Scraping</button>
+      </form>
 
-        // Tabela de todas as cotas do scraping
-        let tableHtml =
-          "<h2>Todas as Cotas</h2><table><tr><th>Grupo</th><th>Cotas</th></tr>";
-        for (const [grupo, cotas] of Object.entries(gruposCotas)) {
-          tableHtml += `<tr><td>${grupo}</td><td>${cotas.join(", ")}</td></tr>`;
-        }
-        tableHtml += "</table>";
-        resultDiv.innerHTML += tableHtml;
+      <!-- Área de resultados -->
+      <div id="result" class="mt-5"></div>
+    </div>
 
-        // Tabela de resultado do GruposCotasProcessor
-        tableHtml =
-          "<h2>Resultado</h2><table><tr><th>Grupo</th><th>Cotas</th></tr>";
-        for (const [grupo, cotas] of Object.entries(result)) {
-          tableHtml += `<tr><td>${grupo}</td><td>${cotas.join(", ")}</td></tr>`;
-        }
-        tableHtml += "</table>";
-        resultDiv.innerHTML += tableHtml;
-      }
-    </script>
+    <div id="overlay" style="display: none"></div>
+    <div id="loading" style="display: none; text-align: center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+      <p>Carregando dados do site da Disal</p>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+
+    <footer class="footer bg-dark text-light mt-auto py-0">
+      <div class="container text-center">
+        <span>© 2024 Scraping System</span>
+      </div>
+    </footer>
   </body>
 </html>
