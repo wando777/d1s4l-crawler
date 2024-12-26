@@ -16,7 +16,7 @@ def scrape():
     password = request.form.get("password")
     sorteio = int(request.form.get("sorteio"))
 
-    bot = ScrapingBot(headless=False)
+    bot = ScrapingBot(headless=True)
     try:
         bot.login_to_site(username, password)
         bot.navigate_to_data_page()
