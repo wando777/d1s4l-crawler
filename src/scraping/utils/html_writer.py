@@ -1,3 +1,5 @@
+import os
+
 def write_html(data, filename):
     """
     Write the given data to an HTML file.
@@ -71,4 +73,6 @@ data = {
     '003310': ['858', '1468', '648', '676', '359', '1548', '1150', '570', '820', '580', '350', '1425', '991', '127', '1460']
 }
 
-write_html(data, '/Users/wanderson.leite/Desktop/wando/projetos/disal-crawler/results.html')
+output_path = os.path.join(os.path.dirname(__file__), '../../../results.html')
+# write_html(data, '/Users/wanderson.leite/Desktop/wando/projetos/disal-crawler/results.html')
+write_html(data, output_path)
