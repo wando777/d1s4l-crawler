@@ -23,7 +23,6 @@ def scrape():
         grupo_cotas = bot._get_grupo_cotas()
         processor = GruposCotasProcessor(grupo_cotas)
         result = processor.find_closest_cotas(sorteio)
-        # processor.save_closest_cotas_to_csv(sorteio, 'sorteio.csv')
 
         return jsonify(
             {"status": "success", "grupos_cotas": grupo_cotas, "result": result}

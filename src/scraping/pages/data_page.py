@@ -5,7 +5,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
-from scraping.utils.csv_writer import CSVWriter
 from scraping.utils.html_writer import write_html
 
 
@@ -40,8 +39,6 @@ class DataPage:
         self._wait_loader()
         self._select_options(main_element)
         self._click_on_grupo_links(main_element)
-        # CSVWriter.gerar_csv(self.grupo_cotas)
-        # write_html(self.grupo_cotas, '/Users/wanderson.leite/Desktop/wando/projetos/disal-crawler/results.html')
 
     def _select_options(self, main_element):
         WebDriverWait(self.driver, 10).until(
