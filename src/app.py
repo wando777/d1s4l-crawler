@@ -1,7 +1,12 @@
-from flask import Flask
-from web.views import main_blueprint
+import sys
 import os
+from flask import Flask
 from dotenv import load_dotenv
+
+# Adicionar o diretório 'src' ao sys.path
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+from web.views import main_blueprint
 
 # Carregar variáveis de ambiente do arquivo .env
 load_dotenv()
