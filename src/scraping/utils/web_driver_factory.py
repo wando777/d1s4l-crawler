@@ -17,7 +17,7 @@ class WebDriverFactory:
 
         environment = os.getenv('ENVIRONMENT', 'local')
         if environment == 'production':
-            chrome_service = Service('/usr/bin/chromedriver')
+            chrome_service = Service('/usr/local/bin/chromedriver')
             return webdriver.Chrome(service=chrome_service, options=chrome_options)
         else:
             return webdriver.Chrome(options=chrome_options)        
