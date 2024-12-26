@@ -1,6 +1,10 @@
 from flask import Flask
 from web.views import main_blueprint
 import os
+from dotenv import load_dotenv
+
+# Carregar variáveis de ambiente do arquivo .env
+load_dotenv()
 
 app = Flask(__name__, 
             template_folder=os.path.join(os.path.dirname(__file__), 'web/templates'),
