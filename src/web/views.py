@@ -17,7 +17,6 @@ def scrape():
     sorteio = int(request.form.get("sorteio"))
 
     bot = ScrapingBot(headless=True)
-    start_time = time.time()
     try:
         bot.login_to_site(username, password)
         print("Logged in successfully")
@@ -26,9 +25,6 @@ def scrape():
         grupo_cotas = bot.get_grupo_cotas()
         processor = GruposCotasProcessor(grupo_cotas)
         result = processor.find_closest_cotas(sorteio)
-        end_time = time.time()
-        duration = end_time - start_time
-        print(f"Scraping duration: {duration:.2f} seconds")
 
         return jsonify(
             {"status": "success", "grupos_cotas": grupo_cotas, "result": result}
@@ -36,7 +32,6 @@ def scrape():
     except Exception as e:
         print(f"An error occurred: {e}")
         import traceback
-import time
         traceback.print_exc()
         return jsonify({"status": "error", "message": str(e)})
     finally:
