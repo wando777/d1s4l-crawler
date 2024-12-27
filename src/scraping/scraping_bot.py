@@ -16,7 +16,7 @@ class ScrapingBot:
     def navigate_to_data_page(self):
         self.data_page.navigate_to_data_page()
 
-    def _get_grupo_cotas(self):
+    def get_grupo_cotas(self):
         return self.data_page.grupo_cotas
 
     def close(self):

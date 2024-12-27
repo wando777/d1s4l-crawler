@@ -21,7 +21,8 @@ def scrape():
         bot.login_to_site(username, password)
         print("Logged in successfully")
         bot.navigate_to_data_page()
-        grupo_cotas = bot._get_grupo_cotas()
+        print("Navigated to data page")
+        grupo_cotas = bot.get_grupo_cotas()
         processor = GruposCotasProcessor(grupo_cotas)
         result = processor.find_closest_cotas(sorteio)
 
@@ -30,6 +31,8 @@ def scrape():
         )
     except Exception as e:
         print(f"An error occurred: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({"status": "error", "message": str(e)})
     finally:
         bot.close()
