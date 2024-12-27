@@ -13,10 +13,45 @@ document
     document.getElementById("loading").style.display = "block";
     document.getElementById("result").style.display = "none";
 
-    fetch("/scrape", {
+    // Etapa 1: Login
+    fetch("/scrape/login", {
       method: "POST",
       body: formData,
     })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "success") {
+          // Etapa 2: Navegar para a página de dados
+          return fetch("/scrape/navigate", {
+            method: "POST",
+          });
+        } else {
+          throw new Error(data.message);
+        }
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "success") {
+          // Etapa 3: Selecionar opções e buscar dados
+          return fetch("/scrape/select_options", {
+            method: "POST",
+          });
+        } else {
+          throw new Error(data.message);
+        }
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "success") {
+          // Etapa 4: Extrair dados e processar resultados
+          return fetch("/scrape/extract", {
+            method: "POST",
+            body: formData,
+          });
+        } else {
+          throw new Error(data.message);
+        }
+      })
       .then((response) => response.json())
       .then((data) => {
         // Ocultar o elemento de "loading"
@@ -29,6 +64,12 @@ document
         } else {
           alert("Erro: " + data.message);
         }
+      })
+      .catch((error) => {
+        // Ocultar o elemento de "loading" em caso de erro
+        document.getElementById("overlay").style.display = "none";
+        document.getElementById("loading").style.display = "none";
+        alert("Erro: " + error.message);
       });
   });
 

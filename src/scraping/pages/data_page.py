@@ -17,7 +17,7 @@ class DataPage:
         )
 
     def navigate_to_data_page(self):
-        time.sleep(1)
+        time.sleep(2)
         self.driver.get("https://www.disal360.com.br/Venda")
         WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.TAG_NAME, "body"))
@@ -34,10 +34,11 @@ class DataPage:
         )
         andamento_button.click()
         self._wait_loader()
-        self._select_options(main_element)
-        self._click_on_grupo_links(main_element)
 
-    def _select_options(self, main_element):
+    def select_options(self):
+        main_element = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "main"))
+        )
         WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, "check"))
         )
@@ -72,6 +73,7 @@ class DataPage:
             )
         )
         buscar_button.click()
+        self._click_on_grupo_links(main_element)
 
     def _set_slider_value_js(self, value):
         slider = WebDriverWait(self.driver, 10).until(

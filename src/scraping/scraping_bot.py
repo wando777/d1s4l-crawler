@@ -1,8 +1,6 @@
-# src/scraping/scraping_bot.py
 from scraping.pages.login_page import LoginPage
 from scraping.pages.data_page import DataPage
 from scraping.utils.web_driver_factory import WebDriverFactory
-
 
 class ScrapingBot:
     def __init__(self, headless=False):
@@ -15,6 +13,9 @@ class ScrapingBot:
 
     def navigate_to_data_page(self):
         self.data_page.navigate_to_data_page()
+
+    def select_options(self):
+        self.data_page.select_options()
 
     def get_grupo_cotas(self):
         return self.data_page.grupo_cotas

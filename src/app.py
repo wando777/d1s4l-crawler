@@ -14,6 +14,10 @@ load_dotenv()
 app = Flask(__name__, 
             template_folder=os.path.join(os.path.dirname(__file__), 'web/templates'),
             static_folder=os.path.join(os.path.dirname(__file__), 'web/static'))
+
+# Definir a secret_key para a aplicação
+app.secret_key = os.urandom(24)
+
 app.register_blueprint(main_blueprint)
 
 if __name__ == "__main__":
