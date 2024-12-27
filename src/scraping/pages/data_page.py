@@ -53,7 +53,7 @@ class DataPage:
             )
         )
         por_parcela_button.click()
-        self._set_slider_value(2000)
+        self._set_slider_value(2500)
         self._select_first_valid_option("busca_andamento_plano")
         check_box = WebDriverWait(main_element, 10).until(
             EC.element_to_be_clickable(
@@ -113,7 +113,7 @@ class DataPage:
         )
         select = Select(dropdown)
         print(f"Options: {len(select.options)}")
-        WebDriverWait(self.driver, 30).until(lambda driver: len(select.options) > 1)
+        WebDriverWait(self.driver, 30).until(lambda driver: len(select.options) >= 1)
         select.select_by_index(1)
 
     def _click_on_grupo_links(self, main_element):
