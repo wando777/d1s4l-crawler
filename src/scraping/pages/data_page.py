@@ -44,23 +44,29 @@ class DataPage:
         WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, "check"))
         )
-        por_parcela_button = WebDriverWait(main_element, 10).until(
+        por_prazo_button = WebDriverWait(main_element, 10).until(
             EC.element_to_be_clickable(
-                (
-                    By.XPATH,
-                    "//input[@value='parcela']/following-sibling::div[contains(text(), 'Por Parcela')]",
-                )
+            (
+                By.CSS_SELECTOR,
+                "#divPasso1 > div > div.wrap-radios > div > label:nth-child(1) > div",
+            )
             )
         )
-        por_parcela_button.click()
-        self._set_slider_value(2500)
+        por_prazo_button.click()
+        prazo_plano_dropdown = WebDriverWait(main_element, 10).until(
+            EC.presence_of_element_located((By.ID, "busca_andamento_prazo_plano"))
+        )
+        select = Select(prazo_plano_dropdown)
+        WebDriverWait(self.driver, 30).until(lambda driver: len(select.options) > 1)
+        select.select_by_value("070")
+        # for option in select.options:
+        #     print(f"Option value: {option.get_attribute('value')}, text: {option.text}")
+        # Select(prazo_plano_dropdown).select_by_index(1)
+        # self._set_slider_value(2000)
         self._select_first_valid_option("busca_andamento_plano")
-        check_box = WebDriverWait(main_element, 10).until(
+        check_box = WebDriverWait(main_element, 20).until(
             EC.element_to_be_clickable(
-                (
-                    By.CSS_SELECTOR,
-                    "#divPasso1 > div > div:nth-child(2) > div > div:nth-child(4) > div > input[type=checkbox]",
-                )
+            (By.XPATH, "/html/body/div[4]/div/div[2]/div/div[2]/div/div[4]/div/input")
             )
         )
         self.driver.execute_script("arguments[0].scrollIntoView(true);", check_box)
@@ -112,9 +118,11 @@ class DataPage:
             EC.presence_of_element_located((By.ID, element_id))
         )
         select = Select(dropdown)
-        print(f"Options: {select.options}")
-        WebDriverWait(self.driver, 30).until(lambda driver: len(select.options) >= 1)
-        select.select_by_index(0)
+        # print(f"Options: {len(select.options)}")
+        WebDriverWait(self.driver, 30).until(lambda driver: len(select.options) > 1)
+        options = [option.text for option in select.options]
+        print(f"Available options: {options}")
+        select.select_by_index(1)
 
     def _click_on_grupo_links(self, main_element):
         WebDriverWait(self.driver, 20).until(
