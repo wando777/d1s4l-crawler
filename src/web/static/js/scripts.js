@@ -43,14 +43,18 @@ document
       .then((response) => response.json())
       .then((data) => {
         if (data.status === "success") {
-          // Etapa 4: Extrair dados e processar resultados
-          return fetch("/scrape/extract", {
-            method: "POST",
-            body: formData,
-          });
+          // Etapa 4: Iniciar o polling para clicar nos links
+          return clickLinksPolling();
         } else {
           throw new Error(data.message);
         }
+      })
+      .then(() => {
+        // Etapa 5: Extrair dados e processar resultados
+        return fetch("/scrape/extract", {
+          method: "POST",
+          body: formData,
+        });
       })
       .then((response) => response.json())
       .then((data) => {
@@ -111,4 +115,30 @@ function displayResults(gruposCotas, result) {
   }
   tableHtml += "</table>";
   resultDiv.innerHTML += tableHtml;
+}
+
+function clickLinksPolling() {
+  return new Promise((resolve, reject) => {
+    function poll() {
+      fetch("/scrape/click_links", {
+        method: "POST",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.status === "success") {
+            if (data.message === "More links to click") {
+              setTimeout(poll, 1000); // Poll novamente após 1 segundo
+            } else {
+              resolve();
+            }
+          } else {
+            reject(new Error(data.message));
+          }
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    }
+    poll();
+  });
 }

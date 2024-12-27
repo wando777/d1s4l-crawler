@@ -73,7 +73,33 @@ class DataPage:
             )
         )
         buscar_button.click()
-        self._click_on_grupo_links(main_element)
+
+    def click_on_grupo_links(self, start_index):
+        main_element = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "main"))
+        )
+        WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located(
+                (By.XPATH, "//*[@id='divPasso21']/div/div/div/div/div/table")
+            )
+        )
+        grupo_links = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_all_elements_located((By.XPATH, "//tbody/tr/td[9]/a"))
+        )
+        end_index = min(start_index + 5, len(grupo_links))  # Processar 5 links por vez
+        for i in range(start_index, end_index):
+            link = grupo_links[i]
+            self._wait_loader()
+            WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(link))
+            self.driver.execute_script("arguments[0].click();", link)
+            self._wait_loader()
+            WebDriverWait(self.driver, 20).until(
+                EC.invisibility_of_element_located(
+                    (By.CLASS_NAME, "fancybox-overlay fancybox-overlay-fixed")
+                )
+            )
+            self._extract_cotas()
+        return end_index < len(grupo_links)
 
     def _set_slider_value_js(self, value):
         slider = WebDriverWait(self.driver, 10).until(
@@ -113,29 +139,8 @@ class DataPage:
         print(f"Available options: {options}")
         select.select_by_index(1)
 
-    def _click_on_grupo_links(self, main_element):
-        WebDriverWait(self.driver, 10).until(
-            EC.visibility_of_element_located(
-                (By.XPATH, "//*[@id='divPasso21']/div/div/div/div/div/table")
-            )
-        )
-        grupo_links = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_all_elements_located((By.XPATH, "//tbody/tr/td[9]/a"))
-        )
-        for link in grupo_links:
-            self._wait_loader()
-            WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(link))
-            self.driver.execute_script("arguments[0].click();", link)
-            self._wait_loader()
-            WebDriverWait(self.driver, 10).until(
-                EC.invisibility_of_element_located(
-                    (By.CLASS_NAME, "fancybox-overlay fancybox-overlay-fixed")
-                )
-            )
-            self._extract_cotas()
-
     def _extract_cotas(self):
-        WebDriverWait(self.driver, 10).until(
+        WebDriverWait(self.driver, 20).until(
             EC.invisibility_of_element_located(
                 (By.CLASS_NAME, "fancybox-overlay fancybox-overlay-fixed")
             )
@@ -158,6 +163,9 @@ class DataPage:
                 print(f"Grupo {grupo_numero}: Cotas extraídas -> {cotas}")
 
     def _wait_loader(self):
-        WebDriverWait(self.driver, 10).until(
-            EC.invisibility_of_element_located((By.ID, "loader"))
-        )
+        try:
+            WebDriverWait(self.driver, 20).until(
+                EC.invisibility_of_element_located((By.ID, "loader"))
+            )
+        except Exception:
+            print("Loader not found or still visible after 20 seconds")

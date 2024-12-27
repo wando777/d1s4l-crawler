@@ -17,6 +17,9 @@ class ScrapingBot:
     def select_options(self):
         self.data_page.select_options()
 
+    def click_on_grupo_links(self, start_index):
+        return self.data_page.click_on_grupo_links(start_index)
+
     def get_grupo_cotas(self):
         return self.data_page.grupo_cotas
 
