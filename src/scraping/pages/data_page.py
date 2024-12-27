@@ -183,7 +183,8 @@ class DataPage:
             self._wait_loader()
             WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(link)
-            ).click()
+            )
+            self.driver.execute_script("arguments[0].click();", link)
             self._wait_loader()
             WebDriverWait(self.driver, 20).until(
                 EC.invisibility_of_element_located((By.CLASS_NAME, "fancybox-overlay fancybox-overlay-fixed"))
