@@ -112,9 +112,9 @@ class DataPage:
             EC.presence_of_element_located((By.ID, element_id))
         )
         select = Select(dropdown)
-        print(f"Options: {len(select.options)}")
+        print(f"Options: {select.options}")
         WebDriverWait(self.driver, 30).until(lambda driver: len(select.options) >= 1)
-        select.select_by_index(1)
+        select.select_by_index(0)
 
     def _click_on_grupo_links(self, main_element):
         WebDriverWait(self.driver, 20).until(
