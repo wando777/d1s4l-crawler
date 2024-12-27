@@ -1,11 +1,9 @@
-import time
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from scraping.utils.html_writer import write_html
-
 
 class DataPage:
     def __init__(self, driver):
@@ -18,7 +16,6 @@ class DataPage:
         )
 
     def navigate_to_data_page(self):
-        time.sleep(3)  # Verifique se este tempo de espera é realmente necessário
         self.driver.get("https://www.disal360.com.br/Venda")
         WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.TAG_NAME, "body"))
@@ -53,7 +50,7 @@ class DataPage:
         por_parcela_button.click()
         self._set_slider_value_js(2000)
         self._select_first_valid_option("busca_andamento_plano")
-        check_box = WebDriverWait(main_element, 20).until(
+        check_box = WebDriverWait(main_element, 10).until(
             EC.element_to_be_clickable(
                 (
                     By.XPATH,
@@ -62,15 +59,6 @@ class DataPage:
             )
         )
         self.driver.execute_script("arguments[0].scrollIntoView(true);", check_box)
-        WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable(
-                (
-                    By.CSS_SELECTOR,
-                    "#divPasso1 > div > div:nth-child(2) > div > div:nth-child(4) > div > input[type=checkbox]",
-                )
-            )
-        )
-        self._wait_loader()
         check_box.click()
         self._select_first_valid_option("busca_andamento_modelo")
         buscar_button = WebDriverWait(main_element, 10).until(
@@ -112,22 +100,22 @@ class DataPage:
         print(f"Current slider value: {current_value}")
 
     def _select_first_valid_option(self, element_id):
-        dropdown = WebDriverWait(self.driver, 20).until(
+        dropdown = WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.ID, element_id))
         )
         select = Select(dropdown)
-        WebDriverWait(self.driver, 30).until(lambda _: len(select.options) > 1)
+        WebDriverWait(self.driver, 10).until(lambda _: len(select.options) > 1)
         options = [option.text for option in select.options]
         print(f"Available options: {options}")
         select.select_by_index(1)
 
     def _click_on_grupo_links(self, main_element):
-        WebDriverWait(self.driver, 20).until(
+        WebDriverWait(self.driver, 10).until(
             EC.visibility_of_element_located(
                 (By.XPATH, "//*[@id='divPasso21']/div/div/div/div/div/table")
             )
         )
-        grupo_links = WebDriverWait(self.driver, 20).until(
+        grupo_links = WebDriverWait(self.driver, 10).until(
             EC.presence_of_all_elements_located((By.XPATH, "//tbody/tr/td[9]/a"))
         )
         for link in grupo_links:
@@ -135,7 +123,7 @@ class DataPage:
             WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(link))
             self.driver.execute_script("arguments[0].click();", link)
             self._wait_loader()
-            WebDriverWait(self.driver, 20).until(
+            WebDriverWait(self.driver, 10).until(
                 EC.invisibility_of_element_located(
                     (By.CLASS_NAME, "fancybox-overlay fancybox-overlay-fixed")
                 )
@@ -143,7 +131,7 @@ class DataPage:
             self._extract_cotas()
 
     def _extract_cotas(self):
-        WebDriverWait(self.driver, 20).until(
+        WebDriverWait(self.driver, 10).until(
             EC.invisibility_of_element_located(
                 (By.CLASS_NAME, "fancybox-overlay fancybox-overlay-fixed")
             )
@@ -166,6 +154,6 @@ class DataPage:
                 print(f"Grupo {grupo_numero}: Cotas extraídas -> {cotas}")
 
     def _wait_loader(self):
-        WebDriverWait(self.driver, 20).until(
+        WebDriverWait(self.driver, 10).until(
             EC.invisibility_of_element_located((By.ID, "loader"))
         )

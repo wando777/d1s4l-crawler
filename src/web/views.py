@@ -4,11 +4,9 @@ from scraping.scraping_bot import ScrapingBot
 
 main_blueprint = Blueprint("main", __name__)
 
-
 @main_blueprint.route("/")
 def index():
     return render_template("index.html")
-
 
 @main_blueprint.route("/scrape", methods=["POST"])
 def scrape():
@@ -32,6 +30,7 @@ def scrape():
     except Exception as e:
         print(f"An error occurred: {e}")
         import traceback
+
         traceback.print_exc()
         return jsonify({"status": "error", "message": str(e)})
     finally:
