@@ -44,25 +44,34 @@ class DataPage:
         WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, "check"))
         )
-        por_prazo_button = WebDriverWait(main_element, 10).until(
+        por_parcela_button = WebDriverWait(main_element, 10).until(
             EC.element_to_be_clickable(
-            (
-                By.CSS_SELECTOR,
-                "#divPasso1 > div > div.wrap-radios > div > label:nth-child(1) > div",
-            )
+                (
+                    By.XPATH,
+                    "//input[@value='parcela']/following-sibling::div[contains(text(), 'Por Parcela')]",
+                )
             )
         )
-        por_prazo_button.click()
-        prazo_plano_dropdown = WebDriverWait(main_element, 10).until(
-            EC.presence_of_element_located((By.ID, "busca_andamento_prazo_plano"))
-        )
-        select = Select(prazo_plano_dropdown)
-        WebDriverWait(self.driver, 30).until(lambda driver: len(select.options) > 1)
-        select.select_by_value("070")
+        por_parcela_button.click()
+        # por_prazo_button = WebDriverWait(main_element, 10).until(
+        #     EC.element_to_be_clickable(
+        #     (
+        #         By.CSS_SELECTOR,
+        #         "#divPasso1 > div > div.wrap-radios > div > label:nth-child(1) > div",
+        #     )
+        #     )
+        # )
+        # por_prazo_button.click()
+        # prazo_plano_dropdown = WebDriverWait(main_element, 10).until(
+        #     EC.presence_of_element_located((By.ID, "busca_andamento_prazo_plano"))
+        # )
+        # select = Select(prazo_plano_dropdown)
+        # WebDriverWait(self.driver, 30).until(lambda driver: len(select.options) > 1)
+        # select.select_by_value("070")
         # for option in select.options:
         #     print(f"Option value: {option.get_attribute('value')}, text: {option.text}")
         # Select(prazo_plano_dropdown).select_by_index(1)
-        # self._set_slider_value(2000)
+        self._set_slider_value(2000)
         self._select_first_valid_option("busca_andamento_plano")
         check_box = WebDriverWait(main_element, 20).until(
             EC.element_to_be_clickable(
