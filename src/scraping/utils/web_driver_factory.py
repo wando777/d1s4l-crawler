@@ -17,7 +17,7 @@ class WebDriverFactory:
         chrome_options.add_argument("--remote-debugging-port=9222")
         chrome_options.add_argument("--disable-dev-shm-usage")
 
-        environment = os.getenv("ENVIRONMENT", "local")
+        environment = os.getenv("ENVIRONMENT", "stable")
         if environment == "local":
             return webdriver.Chrome(options=chrome_options)
         else:
@@ -28,4 +28,5 @@ class WebDriverFactory:
                 "CHROMEDRIVER_PATH", "/app/.chrome-for-testing/chromedriver-linux64/chromedriver"
             )
             service = Service(chrome_driver_path)
+            print(f"Chrome driver set successfully: {chrome_driver_path}")
             return webdriver.Chrome(service=service, options=chrome_options)

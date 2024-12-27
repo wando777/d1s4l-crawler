@@ -19,6 +19,7 @@ def scrape():
     bot = ScrapingBot(headless=True)
     try:
         bot.login_to_site(username, password)
+        print("Logged in successfully")
         bot.navigate_to_data_page()
         grupo_cotas = bot._get_grupo_cotas()
         processor = GruposCotasProcessor(grupo_cotas)
