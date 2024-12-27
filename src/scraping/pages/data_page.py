@@ -103,7 +103,7 @@ class DataPage:
     def _set_slider_value(self, value):
         slider = WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located(
-                (By.CSS_SELECTOR, 'input[type="range"].slider')
+            (By.XPATH, '/html/body/div[4]/div/div[2]/div/div[2]/div/div[1]/div/input')
             )
         )
         slider_div = WebDriverWait(self.driver, 10).until(
@@ -117,6 +117,16 @@ class DataPage:
             raise ValueError(f"Valor fora do intervalo: {min_value} - {max_value}")
         proportion = (value - min_value) / (max_value - min_value)
         move_by_pixels = proportion * slider_width * (slider_width / slider_div_width)
+
+        # Adicionar logs para depuração
+        print(f"Slider width: {slider_width}")
+        print(f"Slider div width: {slider_div_width}")
+        print(f"Min value: {min_value}")
+        print(f"Max value: {max_value}")
+        print(f"Desired value: {value}")
+        print(f"Proportion: {proportion}")
+        print(f"Move by pixels: {move_by_pixels}")
+
         actions = ActionChains(self.driver)
         actions.click_and_hold(slider).move_by_offset(
             move_by_pixels, 0
@@ -128,7 +138,7 @@ class DataPage:
         )
         select = Select(dropdown)
         # print(f"Options: {len(select.options)}")
-        WebDriverWait(self.driver, 30).until(lambda driver: len(select.options) > 1)
+        WebDriverWait(self.driver, 30).until(lambda _: len(select.options) > 1)
         options = [option.text for option in select.options]
         print(f"Available options: {options}")
         select.select_by_index(1)
