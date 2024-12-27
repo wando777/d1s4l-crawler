@@ -112,16 +112,16 @@ class DataPage:
             EC.presence_of_element_located((By.ID, element_id))
         )
         select = Select(dropdown)
-        WebDriverWait(self.driver, 10).until(lambda driver: len(select.options) > 1)
+        WebDriverWait(self.driver, 30).until(lambda driver: len(select.options) > 1)
         select.select_by_index(1)
 
     def _click_on_grupo_links(self, main_element):
-        WebDriverWait(self.driver, 10).until(
+        WebDriverWait(self.driver, 20).until(
             EC.visibility_of_element_located(
                 (By.XPATH, "//*[@id='divPasso21']/div/div/div/div/div/table")
             )
         )
-        grupo_links = WebDriverWait(self.driver, 10).until(
+        grupo_links = WebDriverWait(self.driver, 20).until(
             EC.presence_of_all_elements_located((By.XPATH, "//tbody/tr/td[9]/a"))
         )
         for link in grupo_links:
