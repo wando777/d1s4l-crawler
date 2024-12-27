@@ -71,7 +71,7 @@ class DataPage:
         # for option in select.options:
         #     print(f"Option value: {option.get_attribute('value')}, text: {option.text}")
         # Select(prazo_plano_dropdown).select_by_index(1)
-        self._set_slider_value(2000)
+        self._set_slider_value_js(2000)
         self._select_first_valid_option("busca_andamento_plano")
         check_box = WebDriverWait(main_element, 20).until(
             EC.element_to_be_clickable(
@@ -100,7 +100,7 @@ class DataPage:
         )
         buscar_button.click()
 
-    def _set_slider_value(self, value):
+    def _set_slider_value_css(self, value):
         slider = WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located(
             (By.XPATH, '/html/body/div[4]/div/div[2]/div/div[2]/div/div[1]/div/input')
@@ -131,6 +131,33 @@ class DataPage:
         actions.click_and_hold(slider).move_by_offset(
             move_by_pixels, 0
         ).release().perform()
+
+    
+    def _set_slider_value_js(self, value):
+        slider = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(
+                (By.XPATH, '/html/body/div[4]/div/div[2]/div/div[2]/div/div[1]/div/input')
+            )
+        )
+        min_value = int(slider.get_attribute("min"))
+        max_value = int(slider.get_attribute("max"))
+        if value < min_value or value > max_value:
+            raise ValueError(f"Valor fora do intervalo: {min_value} - {max_value}")
+
+        # Usar JavaScript para definir diretamente o valor do slider e disparar eventos
+        script = """
+        var slider = arguments[0];
+        var value = arguments[1];
+        slider.value = value;
+        slider.dispatchEvent(new Event('input'));
+        slider.dispatchEvent(new Event('change'));
+        """
+        self.driver.execute_script(script, slider, value)
+
+        # Verificar o valor do slider para depuração
+        current_value = self.driver.execute_script("return arguments[0].value;", slider)
+        print(f"Current slider value: {current_value}")
+
 
     def _select_first_valid_option(self, element_id):
         dropdown = WebDriverWait(self.driver, 20).until(
