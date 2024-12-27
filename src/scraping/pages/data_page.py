@@ -108,10 +108,11 @@ class DataPage:
         ).release().perform()
 
     def _select_first_valid_option(self, element_id):
-        dropdown = WebDriverWait(self.driver, 10).until(
+        dropdown = WebDriverWait(self.driver, 20).until(
             EC.presence_of_element_located((By.ID, element_id))
         )
         select = Select(dropdown)
+        print(f"Options: {len(select.options)}")
         WebDriverWait(self.driver, 30).until(lambda driver: len(select.options) > 1)
         select.select_by_index(1)
 
