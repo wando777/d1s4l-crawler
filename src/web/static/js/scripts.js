@@ -21,9 +21,15 @@ document
       .then((response) => response.json())
       .then((data) => {
         if (data.status === "success") {
+          const botId = data.bot_id;
+          localStorage.setItem("bot_id", botId);
           // Etapa 2: Navegar para a página de dados
           return fetch("/scrape/navigate", {
             method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ bot_id: botId }),
           });
         } else {
           throw new Error(data.message);
@@ -32,9 +38,14 @@ document
       .then((response) => response.json())
       .then((data) => {
         if (data.status === "success") {
+          const botId = localStorage.getItem("bot_id");
           // Etapa 3: Selecionar opções e buscar dados
           return fetch("/scrape/select_options", {
             method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ bot_id: botId }),
           });
         } else {
           throw new Error(data.message);
@@ -50,10 +61,15 @@ document
         }
       })
       .then(() => {
+        const botId = localStorage.getItem("bot_id");
+        const sorteio = localStorage.getItem("sorteio");
         // Etapa 5: Extrair dados e processar resultados
         return fetch("/scrape/extract", {
           method: "POST",
-          body: formData,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ bot_id: botId, sorteio: sorteio }),
         });
       })
       .then((response) => response.json())
@@ -120,8 +136,13 @@ function displayResults(gruposCotas, result) {
 function clickLinksPolling() {
   return new Promise((resolve, reject) => {
     function poll() {
+      const botId = localStorage.getItem("bot_id");
       fetch("/scrape/click_links", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ bot_id: botId }),
       })
         .then((response) => response.json())
         .then((data) => {
