@@ -31,6 +31,9 @@ def scrape_login():
         print(f"An error occurred: {e}")
         import traceback
         traceback.print_exc()
+        bot.close()
+        del bot_storage[bot_id]
+        del link_index_storage[bot_id]
         return jsonify({"status": "error", "message": str(e)})
 
 @main_blueprint.route("/scrape/navigate", methods=["POST"])
@@ -48,6 +51,9 @@ def scrape_navigate():
         print(f"An error occurred: {e}")
         import traceback
         traceback.print_exc()
+        bot.close()
+        del bot_storage[bot_id]
+        del link_index_storage[bot_id]
         return jsonify({"status": "error", "message": str(e)})
 
 @main_blueprint.route("/scrape/select_options", methods=["POST"])
@@ -65,6 +71,9 @@ def scrape_select_options():
         print(f"An error occurred: {e}")
         import traceback
         traceback.print_exc()
+        bot.close()
+        del bot_storage[bot_id]
+        del link_index_storage[bot_id]
         return jsonify({"status": "error", "message": str(e)})
 
 @main_blueprint.route("/scrape/click_links", methods=["POST"])
@@ -86,6 +95,9 @@ def scrape_click_links():
         print(f"An error occurred: {e}")
         import traceback
         traceback.print_exc()
+        bot.close()
+        del bot_storage[bot_id]
+        del link_index_storage[bot_id]
         return jsonify({"status": "error", "message": str(e)})
 
 @main_blueprint.route("/scrape/extract", methods=["POST"])
