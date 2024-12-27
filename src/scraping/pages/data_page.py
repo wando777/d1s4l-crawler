@@ -1,3 +1,4 @@
+import time
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait, Select
@@ -16,6 +17,7 @@ class DataPage:
         )
 
     def navigate_to_data_page(self):
+        time.sleep(1)
         self.driver.get("https://www.disal360.com.br/Venda")
         WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.TAG_NAME, "body"))
