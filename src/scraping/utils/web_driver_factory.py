@@ -12,20 +12,19 @@ class WebDriverFactory:
         if headless:
             chrome_options.add_argument("--headless")
 
-        chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--remote-debugging-port=9222")
 
         environment = os.getenv("ENVIRONMENT", "local")
         if environment == "local":
             return webdriver.Chrome(options=chrome_options)
         else:
             chrome_options.binary_location = os.environ.get(
-                "GOOGLE_CHROME_BIN", "/app/.apt/usr/bin/google-chrome"
+                "GOOGLE_CHROME_BIN", "/app/.chrome-for-testing/chrome-linux64/chrome"
             )
             chrome_driver_path = os.environ.get(
-                "CHROMEDRIVER_PATH", "/app/.chromedriver/bin/chromedriver"
+                "CHROMEDRIVER_PATH", "/app/.chrome-for-testing/chromedriver-linux64/chromedriver"
             )
             service = Service(chrome_driver_path)
             return webdriver.Chrome(service=service, options=chrome_options)
