@@ -23,6 +23,7 @@ document
         if (data.status === "success") {
           const botId = data.bot_id;
           localStorage.setItem("bot_id", botId);
+          console.log(`Login successful, bot_id: ${botId}`);
           // Etapa 2: Navegar para a página de dados
           return fetch("/scrape/navigate", {
             method: "POST",
@@ -39,6 +40,7 @@ document
       .then((data) => {
         if (data.status === "success") {
           const botId = localStorage.getItem("bot_id");
+          console.log(`Navigation successful, bot_id: ${botId}`);
           // Etapa 3: Selecionar opções e buscar dados
           return fetch("/scrape/select_options", {
             method: "POST",
@@ -54,6 +56,7 @@ document
       .then((response) => response.json())
       .then((data) => {
         if (data.status === "success") {
+          console.log(`Options selected, bot_id: ${localStorage.getItem("bot_id")}`);
           // Etapa 4: Iniciar o polling para clicar nos links
           return clickLinksPolling();
         } else {
@@ -63,6 +66,7 @@ document
       .then(() => {
         const botId = localStorage.getItem("bot_id");
         const sorteio = localStorage.getItem("sorteio");
+        console.log(`Polling completed, bot_id: ${botId}`);
         // Etapa 5: Extrair dados e processar resultados
         return fetch("/scrape/extract", {
           method: "POST",
@@ -148,8 +152,10 @@ function clickLinksPolling() {
         .then((data) => {
           if (data.status === "success") {
             if (data.message === "More links to click") {
+              console.log(`More links to click, bot_id: ${botId}`);
               setTimeout(poll, 1000); // Poll novamente após 1 segundo
             } else {
+              console.log(`All links clicked, bot_id: ${botId}`);
               resolve();
             }
           } else {
