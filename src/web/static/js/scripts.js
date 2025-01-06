@@ -4,47 +4,39 @@ document
     event.preventDefault();
     const formData = new FormData(event.target);
 
-    // Salvar os dados do formulário no localStorage
-    localStorage.setItem("username", formData.get("username"));
-    localStorage.setItem("sorteio", formData.get("sorteio"));
-
-    // Mostrar o elemento de "loading"
-    document.getElementById("overlay").style.display = "block";
-    document.getElementById("loading").style.display = "block";
-    document.getElementById("result").style.display = "none";
-
     fetch("/scrape", {
       method: "POST",
       body: formData,
     })
       .then((response) => response.json())
       .then((data) => {
-        // Ocultar o elemento de "loading"
-        document.getElementById("overlay").style.display = "none";
-        document.getElementById("loading").style.display = "none";
-        document.getElementById("result").style.display = "block";
-
         if (data.status === "success") {
-          displayResults(data.grupos_cotas, data.result);
+          alert("Scraping iniciado com sucesso. Use o ID para verificar o status.");
         } else {
           alert("Erro: " + data.message);
         }
       });
   });
 
-// Função para preencher o formulário com os dados do localStorage
-function populateForm() {
-  if (localStorage.getItem("username")) {
-    document.getElementById("username").value =
-      localStorage.getItem("username");
-  }
-  if (localStorage.getItem("sorteio")) {
-    document.getElementById("sorteio").value = localStorage.getItem("sorteio");
-  }
-}
+document
+  .getElementById("search-form")
+  .addEventListener("submit", function (event) {
+    event.preventDefault();
+    const scrapeId = document.getElementById("scrape-id").value;
 
-// Chamar a função para preencher o formulário quando a página carregar
-window.onload = populateForm;
+    fetch(`/scrape/status/${scrapeId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        const resultDiv = document.getElementById("result");
+        resultDiv.innerHTML = "";
+
+        if (data.status === "success") {
+          displayResults(data.grupos_cotas, data.result);
+        } else {
+          resultDiv.innerHTML = `<p>${data.message}</p>`;
+        }
+      });
+  });
 
 function displayResults(gruposCotas, result) {
   const resultDiv = document.getElementById("result");

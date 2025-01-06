@@ -56,6 +56,23 @@
         <button type="submit" class="btn btn-primary">Iniciar Scraping</button>
       </form>
 
+      <div class="mt-5">
+        <h2>Buscar por ID de Scraping</h2>
+        <form id="search-form" class="form-group">
+          <div class="form-group">
+            <label for="scrape-id">ID do Scraping:</label>
+            <input
+              type="text"
+              id="scrape-id"
+              name="scrape-id"
+              class="form-control"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-secondary">Buscar</button>
+        </form>
+      </div>
+
       <!-- Área de resultados -->
       <div id="result" class="mt-5"></div>
     </div>
