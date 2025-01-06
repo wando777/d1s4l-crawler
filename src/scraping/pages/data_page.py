@@ -37,32 +37,24 @@ class DataPage:
         )
         andamento_button.click()
         self._wait_loader()
-        self._select_options(main_element)
-        self._click_on_grupo_links(main_element)
 
-    def _select_options(self, main_element):
+    def _select_options(self):
+        main_element = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "main"))
+        )
         WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, "check"))
         )
-        por_prazo_button = WebDriverWait(main_element, 10).until(
+        por_parcela_button = WebDriverWait(main_element, 10).until(
             EC.element_to_be_clickable(
-            (
-                By.CSS_SELECTOR,
-                "#divPasso1 > div > div.wrap-radios > div > label:nth-child(1) > div",
-            )
+                (
+                    By.XPATH,
+                    "//input[@value='parcela']/following-sibling::div[contains(text(), 'Por Parcela')]",
+                )
             )
         )
-        por_prazo_button.click()
-        prazo_plano_dropdown = WebDriverWait(main_element, 10).until(
-            EC.presence_of_element_located((By.ID, "busca_andamento_prazo_plano"))
-        )
-        select = Select(prazo_plano_dropdown)
-        WebDriverWait(self.driver, 30).until(lambda driver: len(select.options) > 1)
-        select.select_by_value("070")
-        # for option in select.options:
-        #     print(f"Option value: {option.get_attribute('value')}, text: {option.text}")
-        # Select(prazo_plano_dropdown).select_by_index(1)
-        # self._set_slider_value(2000)
+        por_parcela_button.click()
+        self._set_slider_value(2000)
         self._select_first_valid_option("busca_andamento_plano")
         check_box = WebDriverWait(main_element, 20).until(
             EC.element_to_be_clickable(
@@ -94,38 +86,46 @@ class DataPage:
     def _set_slider_value(self, value):
         slider = WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located(
-                (By.CSS_SELECTOR, 'input[type="range"].slider')
+                (
+                    By.XPATH,
+                    "/html/body/div[4]/div/div[2]/div/div[2]/div/div[1]/div/input",
+                )
             )
         )
-        slider_div = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "div.main"))
-        )
-        slider_width = slider.size["width"]
-        slider_div_width = slider_div.size["width"]
         min_value = int(slider.get_attribute("min"))
         max_value = int(slider.get_attribute("max"))
         if value < min_value or value > max_value:
             raise ValueError(f"Valor fora do intervalo: {min_value} - {max_value}")
-        proportion = (value - min_value) / (max_value - min_value)
-        move_by_pixels = proportion * slider_width * (slider_width / slider_div_width)
-        actions = ActionChains(self.driver)
-        actions.click_and_hold(slider).move_by_offset(
-            move_by_pixels, 0
-        ).release().perform()
+
+        # Usar JavaScript para definir diretamente o valor do slider e disparar eventos
+        script = """
+        var slider = arguments[0];
+        var value = arguments[1];
+        slider.value = value;
+        slider.dispatchEvent(new Event('input'));
+        slider.dispatchEvent(new Event('change'));
+        """
+        self.driver.execute_script(script, slider, value)
+
+        # Verificar o valor do slider para depuração
+        current_value = self.driver.execute_script("return arguments[0].value;", slider)
+        print(f"Current slider value: {current_value}")
 
     def _select_first_valid_option(self, element_id):
-        dropdown = WebDriverWait(self.driver, 20).until(
+        dropdown = WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.ID, element_id))
         )
         select = Select(dropdown)
-        # print(f"Options: {len(select.options)}")
-        WebDriverWait(self.driver, 30).until(lambda driver: len(select.options) > 1)
+        WebDriverWait(self.driver, 10).until(lambda _: len(select.options) > 1)
         options = [option.text for option in select.options]
         print(f"Available options: {options}")
         select.select_by_index(1)
 
-    def _click_on_grupo_links(self, main_element):
-        WebDriverWait(self.driver, 20).until(
+    def _click_on_grupo_links(self):
+        main_element = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "main"))
+        )
+        WebDriverWait(self.driver, 10).until(
             EC.visibility_of_element_located(
                 (By.XPATH, "//*[@id='divPasso21']/div/div/div/div/div/table")
             )
