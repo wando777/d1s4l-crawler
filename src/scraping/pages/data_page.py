@@ -133,17 +133,21 @@ class DataPage:
         grupo_links = WebDriverWait(self.driver, 20).until(
             EC.presence_of_all_elements_located((By.XPATH, "//tbody/tr/td[9]/a"))
         )
-        print(f"grupo_links: {grupo_links}")
         for link in grupo_links:
             self._wait_loader()
             WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(link)
-            ).click()
+            )
+            self._scroll_to_element(link)
+            link.click()
             self._wait_loader()
             WebDriverWait(self.driver, 20).until(
                 EC.invisibility_of_element_located((By.CLASS_NAME, "fancybox-overlay fancybox-overlay-fixed"))
             )
             self._extract_cotas()
+
+    def _scroll_to_element(self, element):
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
 
     def _extract_cotas(self):
         # WebDriverWait(self.driver, 10).until(
