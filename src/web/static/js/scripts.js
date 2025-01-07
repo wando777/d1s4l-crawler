@@ -10,10 +10,13 @@ document
     })
       .then((response) => response.json())
       .then((data) => {
+        const resultDiv = document.getElementById("result");
+        resultDiv.innerHTML = "";
+
         if (data.status === "success") {
-          alert("Scraping iniciado com sucesso. Use o ID para verificar o status.");
+          resultDiv.innerHTML = `<p>Scraping iniciado com sucesso. Use o ID <strong>${data.scrape_id}</strong> para verificar o status.</p>`;
         } else {
-          alert("Erro: " + data.message);
+          resultDiv.innerHTML = `<p>Erro: ${data.message}</p>`;
         }
       });
   });
@@ -44,7 +47,7 @@ function displayResults(gruposCotas, result) {
 
   // Tabela de todas as cotas do scraping
   let tableHtml =
-    "<h2>Todas as Cotas</h2><table><tr><th>Grupo</th><th>Cotas</th></tr>";
+    "<h2>Todas as Cotas</h2><table class='table table-striped'><tr><th>Grupo</th><th>Cotas</th></tr>";
   for (const [grupo, cotas] of Object.entries(gruposCotas)) {
     tableHtml += `<tr><td>${grupo}</td><td>${cotas.join(", ")}</td></tr>`;
   }
@@ -52,7 +55,7 @@ function displayResults(gruposCotas, result) {
   resultDiv.innerHTML += tableHtml;
 
   // Tabela de resultado do GruposCotasProcessor
-  tableHtml = "<h2>Resultado</h2><table><tr><th>Grupo</th><th>Cotas</th></tr>";
+  tableHtml = "<h2>Resultado</h2><table class='table table-striped'><tr><th>Grupo</th><th>Cotas</th></tr>";
   if (Object.keys(result).length === 0) {
     tableHtml += "<tr><td colspan='2'>Não foram encontradas cotas.</td></tr>";
   } else {

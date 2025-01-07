@@ -4,13 +4,18 @@ from scraping.scraping_bot import ScrapingBot
 from data.scraping_model import ScrapingResult
 from data.database import db
 from app import celery
-import uuid
+import random
+import string
 import logging
 
 main_blueprint = Blueprint("main", __name__)
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO)
+
+def generate_friendly_id(length=8):
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choice(characters) for i in range(length))
 
 @main_blueprint.route("/")
 def index():
@@ -22,7 +27,7 @@ def scrape():
     password = request.form.get("password")
     sorteio = int(request.form.get("sorteio"))
 
-    scrape_id = str(uuid.uuid4())
+    scrape_id = generate_friendly_id()
     scraping_result = ScrapingResult(id=scrape_id, status='pending')
     db.session.add(scraping_result)
     db.session.commit()
