@@ -122,10 +122,10 @@ class DataPage:
         select.select_by_index(1)
 
     def _click_on_grupo_links(self):
-        main_element = WebDriverWait(self.driver, 10).until(
+        WebDriverWait(self.driver, 20).until(
             EC.presence_of_element_located((By.CLASS_NAME, "main"))
         )
-        WebDriverWait(self.driver, 10).until(
+        WebDriverWait(self.driver, 20).until(
             EC.visibility_of_element_located(
                 (By.XPATH, "//*[@id='divPasso21']/div/div/div/div/div/table")
             )
@@ -133,6 +133,7 @@ class DataPage:
         grupo_links = WebDriverWait(self.driver, 20).until(
             EC.presence_of_all_elements_located((By.XPATH, "//tbody/tr/td[9]/a"))
         )
+        print(f"grupo_links: {grupo_links}")
         for link in grupo_links:
             self._wait_loader()
             WebDriverWait(self.driver, 10).until(
