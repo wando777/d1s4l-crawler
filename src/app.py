@@ -22,6 +22,9 @@ app.secret_key = os.urandom(24)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('TEMBO_DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
+# Crie as tabelas no banco de dados
+with app.app_context():
+    db.create_all()
 
 # Configurar Celery
 app.config.update(
