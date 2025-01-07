@@ -29,7 +29,13 @@ with app.app_context():
 # Configurar Celery
 app.config.update(
     CELERY_BROKER_URL=os.getenv('REDIS_URL', 'redis://localhost:6379/0'),
-    CELERY_RESULT_BACKEND=os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+    CELERY_RESULT_BACKEND=os.getenv('REDIS_URL', 'redis://localhost:6379/0'),
+    CELERY_BROKER_USE_SSL={
+        'ssl_cert_reqs': 'CERT_NONE'
+    },
+    CELERY_REDIS_BACKEND_USE_SSL={
+        'ssl_cert_reqs': 'CERT_NONE'
+    }
 )
 
 celery = create_celery_app(app)
