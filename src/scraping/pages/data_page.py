@@ -140,7 +140,14 @@ class DataPage:
             )
             print(f"Link text: {link.text}, Link href: {link.get_attribute('href')}")
             self._scroll_to_element(link)
-            link.click()
+            
+            # Tente clicar usando JavaScript
+            self.driver.execute_script("arguments[0].click();", link)
+            
+            # Alternativamente, use ActionChains para clicar
+            # actions = ActionChains(self.driver)
+            # actions.move_to_element(link).click().perform()
+            
             self._wait_loader()
             WebDriverWait(self.driver, 20).until(
                 EC.invisibility_of_element_located((By.CLASS_NAME, "fancybox-overlay fancybox-overlay-fixed"))
