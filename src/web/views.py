@@ -7,6 +7,9 @@ from app import celery
 import random
 import string
 import logging
+from sqlalchemy.exc import OperationalError
+from celery.exceptions import MaxRetriesExceededError
+
 
 main_blueprint = Blueprint("main", __name__)
 
@@ -49,8 +52,8 @@ def scrape_status(scrape_id):
     else:
         return jsonify({"status": "error", "message": "Scraping failed"})
 
-@celery.task
-def scrape_task(scrape_id, username, password, sorteio):
+@celery.task(bind=True, max_retries=3)
+def scrape_task(self, scrape_id, username, password, sorteio):
     bot = ScrapingBot(headless=True)
     try:
         bot.login_to_site(username, password)
@@ -65,16 +68,28 @@ def scrape_task(scrape_id, username, password, sorteio):
         processor = GruposCotasProcessor(grupo_cotas)
         result = processor.find_closest_cotas(sorteio)
 
-        scraping_result = ScrapingResult.query.get(scrape_id)
-        scraping_result.status = 'completed'
-        scraping_result.result = {'grupos_cotas': grupo_cotas, 'result': result}
-        db.session.commit()
+        with db.session.begin_nested():
+            scraping_result = ScrapingResult.query.get(scrape_id)
+            scraping_result.status = 'completed'
+            scraping_result.result = {'grupos_cotas': grupo_cotas, 'result': result}
+            db.session.commit()
+    except OperationalError as e:
+        logging.error(f"OperationalError occurred: {e}")
+        try:
+            self.retry(exc=e, countdown=5)
+        except MaxRetriesExceededError:
+            with db.session.begin_nested():
+                scraping_result = ScrapingResult.query.get(scrape_id)
+                scraping_result.status = 'failed'
+                db.session.commit()
     except Exception as e:
         logging.error(f"An error occurred during scraping: {e}")
-        scraping_result = ScrapingResult.query.get(scrape_id)
-        scraping_result.status = 'failed'
-        db.session.commit()
+        with db.session.begin_nested():
+            scraping_result = ScrapingResult.query.get(scrape_id)
+            scraping_result.status = 'failed'
+            db.session.commit()
         import traceback
         traceback.print_exc()
     finally:
         bot.close()
+        db.session.remove()

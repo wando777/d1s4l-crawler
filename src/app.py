@@ -21,6 +21,13 @@ app.secret_key = os.urandom(24)
 # Configurar SQLAlchemy
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('TEMBO_DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'pool_pre_ping': True,
+    'pool_recycle': 300,
+    'pool_timeout': 30,
+    'max_overflow': 10,
+    'pool_size': 5,
+}
 db.init_app(app)
 # Crie as tabelas no banco de dados
 with app.app_context():
