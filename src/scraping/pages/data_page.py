@@ -73,7 +73,7 @@ class DataPage:
         self._wait_loader()
         check_box.click()
         self._select_first_valid_option("busca_andamento_modelo")
-        buscar_button = WebDriverWait(main_element, 10).until(
+        buscar_button = WebDriverWait(main_element, 20).until(
             EC.element_to_be_clickable(
                 (
                     By.XPATH,
@@ -135,9 +135,10 @@ class DataPage:
         )
         for link in grupo_links:
             self._wait_loader()
-            WebDriverWait(self.driver, 10).until(
+            WebDriverWait(self.driver, 20).until(
                 EC.element_to_be_clickable(link)
             )
+            print(f"Link text: {link.text}, Link href: {link.get_attribute('href')}")
             self._scroll_to_element(link)
             link.click()
             self._wait_loader()
