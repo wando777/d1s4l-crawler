@@ -14,7 +14,7 @@ document
         resultDiv.innerHTML = "";
 
         if (data.status === "success") {
-          resultDiv.innerHTML = `<p>Scraping iniciado com sucesso. Use o ID <strong>${data.scrape_id}</strong> para verificar o status.</p>`;
+          resultDiv.innerHTML = `<p>Processamento para busca de cota iniciado com sucesso. Use o ID <strong>${data.scrape_id}</strong> para verificar o status.</p>`;
         } else {
           resultDiv.innerHTML = `<p>Erro: ${data.message}</p>`;
         }

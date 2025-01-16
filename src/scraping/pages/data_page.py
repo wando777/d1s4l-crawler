@@ -34,7 +34,7 @@ class DataPage:
         andamento_button.click()
         self._wait_loader()
 
-    def _select_options(self):
+    def _select_options(self, slider_value):
         main_element = WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, "main"))
         )
@@ -50,8 +50,9 @@ class DataPage:
             )
         )
         por_parcela_button.click()
-        self._set_slider_value(2000)
-        self._select_first_valid_option("busca_andamento_plano")
+        self._set_slider_value(slider_value)
+        # self._select_first_valid_option("busca_andamento_plano")
+        self._select_option("busca_andamento_plano", "value", 2)
         check_box = WebDriverWait(main_element, 20).until(
             EC.element_to_be_clickable(
                 (By.XPATH, "/html/body/div[4]/div/div[2]/div/div[2]/div/div[4]/div/input")
@@ -68,7 +69,7 @@ class DataPage:
         )
         self._wait_loader()
         check_box.click()
-        self._select_first_valid_option("busca_andamento_modelo")
+        self._select_option("busca_andamento_modelo", "last")
         buscar_button = WebDriverWait(main_element, 20).until(
             EC.element_to_be_clickable(
                 (
@@ -107,7 +108,7 @@ class DataPage:
         current_value = self.driver.execute_script("return arguments[0].value;", slider)
         print(f"Current slider value: {current_value}")
 
-    def _select_first_valid_option(self, element_id):
+    def _select_option(self, element_id, selection_type="first", value=None):
         dropdown = WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.ID, element_id))
         )
@@ -115,7 +116,18 @@ class DataPage:
         WebDriverWait(self.driver, 10).until(lambda _: len(select.options) > 1)
         options = [option.text for option in select.options]
         print(f"Available options: {options}")
-        select.select_by_index(1)
+
+        if selection_type == "first":
+            select.select_by_index(1)
+        elif selection_type == "last":
+            select.select_by_index(len(select.options) - 1)
+        elif selection_type == "value" and value is not None:
+            if 1 <= value < len(select.options):
+                select.select_by_index(value)
+            else:
+                raise ValueError("Value out of range for dropdown options")
+        else:
+            raise ValueError("Invalid selection type or value not provided for 'value' selection type")
 
     def click_on_grupo_links(self):
         WebDriverWait(self.driver, 20).until(

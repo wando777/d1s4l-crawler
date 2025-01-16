@@ -29,13 +29,14 @@ def scrape():
     username = request.form.get("username")
     password = request.form.get("password")
     sorteio = int(request.form.get("sorteio"))
+    slider_value = int(request.form.get("slider_value"))
 
     scrape_id = generate_friendly_id()
     scraping_result = ScrapingResult(id=scrape_id, status='pending')
     db.session.add(scraping_result)
     db.session.commit()
 
-    scrape_task.delay(scrape_id, username, password, sorteio)
+    scrape_task.delay(scrape_id, username, password, sorteio, slider_value)
 
     return jsonify({"status": "success", "scrape_id": scrape_id})
 
@@ -52,14 +53,14 @@ def scrape_status(scrape_id):
         return jsonify({"status": "error", "message": "Ocorreu um erro durante o processamento, faça uma nova busca"})
 
 @celery.task(bind=True, max_retries=3)
-def scrape_task(self, scrape_id, username, password, sorteio):
+def scrape_task(self, scrape_id, username, password, sorteio, slider_value):
     bot = ScrapingBot(headless=True)
     try:
         bot.login_to_site(username, password)
         logging.info(f"Logged in successfully with scrape_id: {scrape_id}")
         bot.navigate_to_data_page()
         logging.info(f"Navigated to data page with scrape_id: {scrape_id}")
-        bot.select_options()
+        bot.select_options(slider_value)
         logging.info(f"Options selected with scrape_id: {scrape_id}")
         bot.click_on_grupo_links()
         logging.info(f"Clicked on grupo links with scrape_id: {scrape_id}")
