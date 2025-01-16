@@ -2,14 +2,13 @@
 
 /* Customização da página */
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Roboto', sans-serif;
   background-color: #f8f9fa;
   margin: 0;
   padding: 0;
-}
-
-body {
-  margin-bottom: 50px; /* Adjust the value as needed */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 h1 {
@@ -17,41 +16,18 @@ h1 {
   margin-bottom: 20px;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-}
-
-table,
-th,
-td {
-  border: 1px solid #dee2e6;
-}
-
-th,
-td {
-  padding: 8px;
-  text-align: left;
-}
-
-th {
-  background-color: #343a40;
-  color: white;
-}
-
-tr:nth-child(even) td {
-  background-color: #f2f2f2;
-}
-
-/* Margem extra entre as seções */
 .container {
+  flex: 1;
   margin-top: 20px;
 }
 
-/* Aumentar a margem inferior da tabela */
-table {
-  margin-bottom: 20px;
+.form-group label {
+  font-weight: 500;
+}
+
+.form-control {
+  border-radius: 5px;
+  padding: 10px;
 }
 
 button[type="submit"] {
@@ -71,13 +47,16 @@ button[type="submit"]:focus {
   outline: none;
 }
 
-/* Estilização do rodapé */
 .footer {
   background-color: #343a40;
   color: white;
   padding: 10px 0;
   text-align: center;
-  position: fixed;
-  bottom: 0;
   width: 100%;
+  margin-top: auto;
+}
+
+/* Adicionando espaçamento entre a tabela de resultados e o rodapé */
+#result {
+  margin-bottom: 50px; /* Ajuste conforme necessário */
 }
