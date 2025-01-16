@@ -1,12 +1,9 @@
-# src/scraping/pages/data_page.py
 import time
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
-from scraping.utils.html_writer import write_html
-
 
 class DataPage:
     def __init__(self, driver):
@@ -19,7 +16,6 @@ class DataPage:
         )
 
     def navigate_to_data_page(self):
-        # self.ensure_login_complete()
         time.sleep(3)
         self.driver.get("https://www.disal360.com.br/Venda")
         WebDriverWait(self.driver, 10).until(
@@ -58,7 +54,7 @@ class DataPage:
         self._select_first_valid_option("busca_andamento_plano")
         check_box = WebDriverWait(main_element, 20).until(
             EC.element_to_be_clickable(
-            (By.XPATH, "/html/body/div[4]/div/div[2]/div/div[2]/div/div[4]/div/input")
+                (By.XPATH, "/html/body/div[4]/div/div[2]/div/div[2]/div/div[4]/div/input")
             )
         )
         self.driver.execute_script("arguments[0].scrollIntoView(true);", check_box)
@@ -121,7 +117,7 @@ class DataPage:
         print(f"Available options: {options}")
         select.select_by_index(1)
 
-    def _click_on_grupo_links(self):
+    def click_on_grupo_links(self):
         WebDriverWait(self.driver, 20).until(
             EC.presence_of_element_located((By.CLASS_NAME, "main"))
         )
@@ -158,9 +154,6 @@ class DataPage:
         self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
 
     def _extract_cotas(self):
-        # WebDriverWait(self.driver, 10).until(
-        #     EC.presence_of_element_located((By.ID, "divPasso22"))
-        # )
         WebDriverWait(self.driver, 20).until(
             EC.invisibility_of_element_located((By.CLASS_NAME, "fancybox-overlay fancybox-overlay-fixed"))
         )

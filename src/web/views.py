@@ -43,14 +43,13 @@ def scrape():
 def scrape_status(scrape_id):
     scraping_result = ScrapingResult.query.get(scrape_id)
     if not scraping_result:
-        return jsonify({"status": "error", "message": "Scrape ID not found"})
-
+        return jsonify({"status": "error", "message": "ID de busca não encontrado"})
     if scraping_result.status == 'pending':
-        return jsonify({"status": "pending", "message": "Scraping in progress"})
+        return jsonify({"status": "pending", "message": "Processando... Aguarde um momento"})
     elif scraping_result.status == 'completed':
         return jsonify({"status": "success", "grupos_cotas": scraping_result.result['grupos_cotas'], "result": scraping_result.result['result']})
     else:
-        return jsonify({"status": "error", "message": "Scraping failed"})
+        return jsonify({"status": "error", "message": "Ocorreu um erro durante o processamento, faça uma nova busca"})
 
 @celery.task(bind=True, max_retries=3)
 def scrape_task(self, scrape_id, username, password, sorteio):

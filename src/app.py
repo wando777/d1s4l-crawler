@@ -37,7 +37,15 @@ with app.app_context():
 redis_url = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
 app.config.update(
     CELERY_BROKER_URL=redis_url,
-    CELERY_RESULT_BACKEND=redis_url
+    CELERY_RESULT_BACKEND=redis_url,
+    CELERY_TASK_SERIALIZER='json',
+    CELERY_RESULT_SERIALIZER='json',
+    CELERY_ACCEPT_CONTENT=['json'],
+    CELERYD_CONCURRENCY=2,  # Limitar o número de workers
+    CELERYD_PREFETCH_MULTIPLIER=1,  # Limitar o número de tarefas pré-buscadas
+    CELERY_ACKS_LATE=True,  # Habilitar reconhecimento tardio
+    CELERY_TASK_SOFT_TIME_LIMIT=300,  # Limite de tempo suave para tarefas
+    CELERY_TASK_TIME_LIMIT=600,  # Limite de tempo rígido para tarefas
 )
 
 # Se estiver em produção, configurar SSL
