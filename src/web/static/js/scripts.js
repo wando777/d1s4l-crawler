@@ -55,12 +55,16 @@ function displayResults(gruposCotas, result) {
   resultDiv.innerHTML += tableHtml;
 
   // Tabela de resultado do GruposCotasProcessor
-  tableHtml = "<h2>Resultado</h2><table class='table table-striped'><tr><th>Grupo</th><th>Cotas</th></tr>";
+  tableHtml =
+    "<h2>Resultado</h2><table class='table table-striped'><tr><th>Grupo</th><th>Cotas</th><th>Referência</th></tr>";
   if (Object.keys(result).length === 0) {
-    tableHtml += "<tr><td colspan='2'>Não foram encontradas cotas.</td></tr>";
+    tableHtml += "<tr><td colspan='3'>Não foram encontradas cotas.</td></tr>";
   } else {
-    for (const [grupo, cotas] of Object.entries(result)) {
-      tableHtml += `<tr><td>${grupo}</td><td>${cotas.join(", ")}</td></tr>`;
+    for (const [grupo, data] of Object.entries(result)) {
+      const { cotas, referencia } = data;
+      tableHtml += `<tr><td>${grupo}</td><td>${cotas.join(
+        ", "
+      )}</td><td>${referencia}</td></tr>`;
     }
   }
   tableHtml += "</table>";
