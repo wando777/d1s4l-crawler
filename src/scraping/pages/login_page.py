@@ -9,7 +9,7 @@ class LoginPage:
         self.driver = driver
 
     def login(self, username, password):
-        self.driver.get("https://www.disal360.com.br/Acesso/Entrar")
+        self.driver.get("https://disal360.com.br/Acesso/Entrar")
         WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located((By.ID, "CPF"))
         ).send_keys(username)
